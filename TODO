@@ -1,0 +1,14 @@
+THINGS TO DO AND FIX:
+
+Okay, so preferences (like premium options and whatever) should get retrieved dynamically by the
+ display (HTML/JS) at render-time, and based on submitting a cookie and a special anti-XSRF token.
+
+The map prefs model is broken. Make it more elegant, mostly by figuring out what's an option (user-defined),
+ and what's an "administrator configuration option" (that is, how Strega wants it).
+
+The back-end needs to be built. Data should live in a SQL database that's filled by another job. Eventually
+ we can work on getting a direct data feed from Spot. I suspect we can do it in realtime using AJAX, even.
+
+A map "update" should consist of a call to /ridehistory/ with a parameter for "only events newer than x timestamp".
+ Then you update the model in the page and everything re-draws. Seriously, don't overthink re-drawing the page, because
+ gmaps will do it all automatically.

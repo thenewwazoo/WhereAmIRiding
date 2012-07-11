@@ -1,0 +1,185 @@
+$def with (ridername, riderid)
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" type="text/css" href="http://www.WhereAmIRiding.com/gpsfiles/map/style.css" />
+
+<title>Trip Tracker - $ridername</title>
+
+<link href="http://code.google.com/apis/maps/documentation/javascript/examples/default.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=weather&sensor=false"></script>
+<!-- <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAE46eJan0szd83J6Fa9e3tlo043KHXB00&libraries=weather&sensor=false"></script> -->
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.js"></script>
+<script type="text/javascript">
+
+var riderid = $riderid;
+
+var controlsOptions = {};
+var ridePath;
+var infowindow = new google.maps.InfoWindow();
+var map;
+
+var markerImages = {
+  START: 'http://www.whereamiriding.com/gpsfiles/map/images/start.png',
+  TRACK: 'http://www.whereamiriding.com/gpsfiles/map/images/marker-green-mini.png',
+  TEST:  'http://www.whereamiriding.com/gpsfiles/map/images/plus.png',
+  HELP:  'http://www.whereamiriding.com/gpsfiles/map/images/minus.png',
+  END:   'http://www.whereamiriding.com/gpsfiles/map/images/motorcycle2.png'
+}
+
+// this is hacky. fix the preferences model
+// seriously. ignore the way this works. it needs a lot of re-thinking
+function getControlsOptions() {
+  jQuery.getJSON('/prefs/' + riderid, function(opts) {
+    controlsOptions.disableDefaultUI = opts.disable_std_ui;
+    controlsOptions.streetViewControl = opts.gmaps_controls;
+    controlsOptions.panControl = opts.gmaps_controls;
+    controlsOptions.mapTypeControl = opts.gmaps_controls;
+    controlsOptions.mapTypeControlOptions = { style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR, position: google.maps.ControlPosition.TOP_RIGHT };
+    controlsOptions.zoomControl = opts.gmaps_controls;
+    controlsOptions.zoomControlOptions = { style: google.maps.ZoomControlStyle.LARGE };
+    controlsOptions.mapTypeId = google.maps.MapTypeId.TERRAIN;
+
+    map.setOptions(controlsOptions)
+
+  });
+};
+
+function getRideHistory() {
+  var historyArray = ridePath.getPath();
+
+  jQuery.getJSON('/ridehistory/' + riderid, function(hist) {
+    jQuery.each( hist, function(i, entry) {
+
+      var eventidx = entry['id'];
+      var position = new google.maps.LatLng(entry['lat'], entry['lon']);
+      historyArray.setAt(eventidx, position);
+
+      var eventtype = entry['type'];
+      switch(eventidx) { 
+        case 0: 
+          eventtype = "START"; 
+          break; 
+        case hist.length - 1: 
+          eventtype = "END"; 
+          break; 
+      };
+
+      addMapPin(position, eventtype, eventidx);
+
+    });
+
+    map.setCenter(historyArray.getAt(historyArray.getLength()-1));
+
+    zoomMap(20);
+
+  });
+};
+
+function addMapPin(position, eventtype, index) {
+  var icon = markerImages[eventtype];
+  var title = "[#" + index + "] @ (" + position.toString() + ")";
+  var marker = new google.maps.Marker({ position: position, 
+                                    map: map, 
+                                    icon: icon,
+                                    zIndex: 1,
+                                    title: title
+                                  });
+  google.maps.event.addListener(marker, 'click', function () {
+    infowindow.close();
+    getEventInfo(marker, index);
+  });
+}
+
+function getEventInfo(marker, riderevent) {
+  jQuery.ajax({
+    url: "/eventinfo/" + riderid + "/" + riderevent,
+    success: function(data) {
+      infowindow.setContent(data);
+      infowindow.open(map, marker);
+    }
+  });
+}
+
+function zoomMap(zoomPoints) {
+  var bounds = new google.maps.LatLngBounds();
+  var pathlen = ridePath.getPath().length;
+
+  bounds.extend( ridePath.getPath().getAt( pathlen - 1) );
+  bounds.extend( ridePath.getPath().getAt( pathlen - zoomPoints < 0 ? 0 : pathlen - zoomPoints ) );
+
+  map.fitBounds(bounds);
+}
+
+function initialize() {
+
+  var SF = new google.maps.LatLng(37.7793, -122.4192);
+  var initialOpts = { center: SF, // this is mandatory, but immediately gets changed
+          zoom: 12,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+  map = new google.maps.Map(document.getElementById("map_canvas"), initialOpts);
+
+  getControlsOptions();
+
+  ridePath = new google.maps.Polyline({
+        strokeColor: "#0000c8",
+        strokeOpacity: 2,
+        strokeWeight: 2
+        });
+  ridePath.setMap(map);
+
+  getRideHistory();
+
+}
+
+</script>
+</head>
+
+  <body onload="initialize()">
+  <div id="map_canvas"></div>
+
+	<div class="mapinfo">
+	<form>
+	<strong>Map Options:</strong><br />
+	<input type="hidden" name="username" value="KKUG" />
+	<select name="map_type">
+	  <option value="ROADMAP"  />RoadMap</option>
+	  <option value="TERRAIN" selected="selected" />Terrain</option>
+	  <option value="SATELLITE"  />Satellite</option>
+	</select><br />
+	  <input type="checkbox" name="weather" value="ON"  /> Weather: <font color='red'>OFF</font><br />
+	  <input type="checkbox" name="clouds" value="ON"  /> Clouds: <font color='red'>OFF</font><br />
+	  <input type="checkbox" name="traffic" value="ON"  /> Traffic: <font color='red'>OFF</font><br />
+	  <input type="checkbox" name="fulltrip" value="ON"  /> Full Trip: <font color='red'>OFF</font><br />
+	<strong>User Key:</strong><br />
+	<input type="text" size="10" maxlength="10" name="user_key" value="none" ><br />
+	<font color='grey'><strong>Premium:</strong></font><br />
+	  <font color='grey'>Auto-Refresh:</font> <font color='red'>OFF</font><br />
+	  <input type="checkbox" name="highlight" value="ON" unchecked disabled /> <font color='grey'> Highlight:</font> <font color='red'>OFF</font><br />
+	  <input type="checkbox" name="images" value="OFF" unchecked disabled /> <font color='grey'> Hide Images</font><br />
+	  <input type="checkbox" name="controls" value="OFF" unchecked disabled /> <font color='grey'> Hide Controls</font><br />
+	  <input type="checkbox" name="options" value="OFF"  disabled /> <font color='grey'> Hide Options</font><br />
+	  <input type="checkbox" name="overlays" value="OFF" unchecked disabled /> <font color='grey'> Hide Overlays</font><br />
+	<center>  <input type="submit" value="Refresh" /></center>
+	</form>
+	</div>
+
+	<div id="footer_url">
+	  <a href='http://www.whereamiriding.com' target='_parent'>&copy; 2012 - WhereAmIRiding.com</a>
+	</div>
+
+	<div id="footer_spot_logo">
+	  <a href='http://share.findmespot.com/shared/faces/viewspots.jsp?glId=0GIPj7nkR5zuKU0BLpnDZSqc1sYcygzm4' target='_blank'><img src='http://whereamiriding.com/gpsfiles/map/images/spotlogo02.png' title='Click to see this user on FindMeSpot.com' alt='Click to see this user on FindMeSpot.com' width='48' ></a>
+	</div>
+
+	<div id="images">
+	  <a href='http://dualsport-sd.com/forums/index.php\?/topic/7697-the-kug-is-everywhere/' title='The Kug' alt='The Kug' target='_blank'><img src='http://whereamiriding.com/gpsfiles/map/images/users/thekug.png' width='100' ></a>
+	</div>
+
+  </body>
+</html>
