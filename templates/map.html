@@ -22,6 +22,9 @@ var ridePath;
 var infowindow = new google.maps.InfoWindow();
 var map;
 
+var defaultZoom = 2;
+var isFullZoom = false;
+
 var markerImages = {
   START: 'http://www.whereamiriding.com/gpsfiles/map/images/start.png',
   TRACK: 'http://www.whereamiriding.com/gpsfiles/map/images/marker-green-mini.png',
@@ -74,7 +77,7 @@ function getRideHistory() {
 
     map.setCenter(historyArray.getAt(historyArray.getLength()-1));
 
-    zoomMap(20);
+    zoomMap(defaultZoom);
 
   });
 };
@@ -106,6 +109,9 @@ function getEventInfo(marker, riderevent) {
 
 function zoomMap(zoomPoints) {
   var bounds = new google.maps.LatLngBounds();
+  if (typeof zoomPoints === 'undefined') {
+    zoomPoints = ridePath.getPath().length;
+  }
   var pathlen = ridePath.getPath().length;
 
   bounds.extend( ridePath.getPath().getAt( pathlen - 1) );
@@ -137,6 +143,44 @@ function initialize() {
 
 }
 
+var weatherLayer = new google.maps.weather.WeatherLayer({
+  temperatureUnits: google.maps.weather.TemperatureUnit.FAHRENHEIT
+});
+var cloudLayer = new google.maps.weather.CloudLayer();
+var trafficLayer = new google.maps.TrafficLayer();
+
+function toggleLayer(layer) {
+  if (layer.getMap()) {
+    layer.setMap(null);
+  } else {
+    layer.setMap(map);
+  }
+}
+
+function toggleZoom() {
+  if (isFullZoom) {
+    zoomMap(defaultZoom);
+    isFullZoom = false;
+  } else {
+    zoomMap();
+    isFullZoom = true;
+  }
+}
+
+function updateMapType(mapTypeSelector) {
+  var mapType = mapTypeSelector.options[mapTypeSelector.selectedIndex].value;
+  switch (mapType) {
+    case "TERRAIN":
+      map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
+      break;
+    case "SATELLITE":
+      map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+      break;
+    default:
+      map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+  }
+}
+
 </script>
 </head>
 
@@ -147,15 +191,15 @@ function initialize() {
 	<form>
 	<strong>Map Options:</strong><br />
 	<input type="hidden" name="username" value="KKUG" />
-	<select name="map_type">
-	  <option value="ROADMAP"  />RoadMap</option>
+	<select name="map_type" onChange="updateMapType(this);">
+	  <option value="ROADMAP"  />Roads</option>
 	  <option value="TERRAIN" selected="selected" />Terrain</option>
 	  <option value="SATELLITE"  />Satellite</option>
 	</select><br />
-	  <input type="checkbox" name="weather" value="ON"  /> Weather: <font color='red'>OFF</font><br />
-	  <input type="checkbox" name="clouds" value="ON"  /> Clouds: <font color='red'>OFF</font><br />
-	  <input type="checkbox" name="traffic" value="ON"  /> Traffic: <font color='red'>OFF</font><br />
-	  <input type="checkbox" name="fulltrip" value="ON"  /> Full Trip: <font color='red'>OFF</font><br />
+	  <input type="checkbox" name="weather" value="ON" onClick="toggleLayer(weatherLayer);" /> Weather<br />
+	  <input type="checkbox" name="clouds" value="ON"  onClick="toggleLayer(cloudLayer);" /> Clouds<br />
+	  <input type="checkbox" name="traffic" value="ON"  onClick="toggleLayer(trafficLayer);" /> Traffic<br />
+	  <input type="checkbox" name="fulltrip" value="ON" onClick="toggleZoom();" /> Full Trip<br />
 	<strong>User Key:</strong><br />
 	<input type="text" size="10" maxlength="10" name="user_key" value="none" ><br />
 	<font color='grey'><strong>Premium:</strong></font><br />
