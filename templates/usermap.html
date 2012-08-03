@@ -1,0 +1,63 @@
+$def with (ridername, riderid, riderurl, riderglId)
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" type="text/css" href="/static/css/default.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+
+<title>Trip Tracker - $ridername</title>
+
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=weather&sensor=false"></script>
+<!-- <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAE46eJan0szd83J6Fa9e3tlo043KHXB00&libraries=weather&sensor=false"></script> -->
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.js"></script>
+
+<script type="text/javascript">
+var riderid = "$riderid";
+</script>
+<script type="text/javascript" src="/static/js/riderhistory.js"></script>
+<script type="text/javascript" src="/static/js/maplayerctl.js"></script>
+
+</head>
+
+  <body onload="initialize()">
+  <div id="map_canvas"></div>
+
+	<div class="mapinfo">
+	<strong>Map Options:</strong><br />
+	<select name="map_type" onChange="updateMapType(this, map);">
+	  <option value="ROADMAP"  />Roads</option>
+	  <option value="TERRAIN" selected="selected" />Terrain</option>
+	  <option value="SATELLITE"  />Satellite</option>
+	</select><br />
+	  <input type="checkbox" name="weather" value="ON" onClick="toggleLayer(weatherLayer, map);" /> Weather<br />
+	  <input type="checkbox" name="clouds" value="ON"  onClick="toggleLayer(cloudLayer, map);" /> Clouds<br />
+	  <input type="checkbox" name="traffic" value="ON"  onClick="toggleLayer(trafficLayer, map);" /> Traffic<br />
+	  <input type="checkbox" name="fulltrip" value="ON" onClick="toggleZoom();" /> Full Trip<br />
+    <hr />
+	<font color='grey'><strong>Premium:</strong></font><br />
+	  <font color='grey'>Auto-Refresh:</font> <font color='red'>OFF</font><br />
+	  <input type="checkbox" name="highlight" value="ON" unchecked disabled /> <font color='grey'> Highlight:</font> <font color='red'>OFF</font><br />
+	  <input type="checkbox" name="images" value="OFF" unchecked disabled /> <font color='grey'> Hide Images</font><br />
+	  <input type="checkbox" name="controls" value="OFF" unchecked disabled /> <font color='grey'> Hide Controls</font><br />
+	  <input type="checkbox" name="options" value="OFF"  disabled /> <font color='grey'> Hide Options</font><br />
+	  <input type="checkbox" name="overlays" value="OFF" unchecked disabled /> <font color='grey'> Hide Overlays</font><br />
+	</div>
+
+	<div id="footer_url">
+	  <a href='http://www.whereamiriding.com' target='_parent'>&copy; 2012 - WhereAmIRiding.com</a>
+	</div>
+
+	<div id="footer_spot_logo">
+	  <a href='http://share.findmespot.com/shared/faces/viewspots.jsp?glId=$riderglId' target='_blank'><img src='/static/images/spotlogo02.png' title='Click to see this user on FindMeSpot.com' alt='Click to see this user on FindMeSpot.com' width='48' ></a>
+	</div>
+
+	<div id="images">
+	  <a href='$riderurl' title='$ridername' alt='$ridername' target='_blank'>
+      <img src='/static/images/users/$(riderid).png' width='100' onerror="this.src='/static/images/logo-icon2.png';">
+    </a>
+	</div>
+
+  </body>
+</html>
