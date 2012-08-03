@@ -6,7 +6,10 @@ var ridePath;
 var infowindow = new google.maps.InfoWindow();
 var map;
 
-var defaultZoom = 2;
+var riderMarkers = [];
+var lastUpdate = Math.round(Date.now() / 1000);
+
+var defaultZoom = 7;
 var isFullZoom = false;
 
 var markerImages = {
@@ -35,8 +38,10 @@ function getControlsOptions() {
   });
 };
 
-function updateHistory() {
-  //
+function updateMap() {
+  console.log("updating map since " + lastUpdate);
+  getHistoryData(lastUpdate);
+  lastUpdate = Math.round(Date.now() / 1000);
 }
 
 function getRideHistory() {
@@ -47,12 +52,11 @@ function getHistoryData(newerthan) {
   var historyArray = ridePath.getPath();
 
   var histURL = "/ridehistory/" + riderid + (newerthan > 0 ? "?tstamp="+newerthan : "");
-console.log("histURL is " + histURL);
   jQuery.getJSON(histURL, function(hist) {
     jQuery.each( hist, function(i, entry) {
-
-      var eventidx = entry['timestamp'];
+      var eventidx = entry['id'];
       var position = new google.maps.LatLng(entry['lat'], entry['lon']);
+      console.log('added hist ' + eventidx + ' @ ' + position);
       historyArray.setAt(eventidx, position);
 
       var eventtype = entry['type'];
@@ -60,8 +64,7 @@ console.log("histURL is " + histURL);
 
     });
 
-//    map.setCenter(historyArray.getAt(historyArray.getLength()-1));
-
+    updateRiderPosMarker();
     zoomMap(defaultZoom);
 
   });
@@ -80,6 +83,17 @@ function addMapPin(position, eventtype, index) {
     infowindow.close();
     getEventInfo(marker, index);
   });
+  riderMarkers[index] = marker;
+}
+
+function updateRiderPosMarker()
+{
+  jQuery.each(riderMarkers, function(i, marker){
+    if (marker.getIcon() == markerImages['END']) {
+      marker.setIcon(markerImages['TRACK']);
+    }
+  });
+  riderMarkers[riderMarkers.length - 1].icon = markerImages['END'];
 }
 
 function getEventInfo(marker, riderevent) {
@@ -113,6 +127,8 @@ function initialize() {
   ridePath.setMap(map);
 
   getRideHistory();
+
+  setInterval(updateMap, 1000 * 60 * 10);
 
 }
 
