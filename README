@@ -1,0 +1,7 @@
+
+web/ is the standard distribution of web.py. easiest just to check it in here.
+
+GAE requires that you compile templates. to do that, run
+$ python web/template.py --compile templates
+
+this code works best when modified while listening to trance or house music.

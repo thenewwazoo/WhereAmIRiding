@@ -27,6 +27,7 @@ class index:
             riderglId = "0PYkecaqTzOMoTYm4fJaX5SKdSjhW3i7y"
             return render.usermap(ridername, riderid, riderurl, riderglId)
 
+app = web.application(urls, locals()).wsgifunc()
+
 if __name__ == "__main__":
-    app = web.application(urls, locals())
-    app.run()
+    app.cgirun()

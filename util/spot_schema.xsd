@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+ <xs:element name="messageList">
+
+  <xs:annotation>
+   <xs:documentation>A list of messages get from the message servlet</xs:documentation>
+  </xs:annotation>
+
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element name="totalCount" type="xs:decimal" minOccurs="0"/>
+    <xs:element name="message" type="Message" maxOccurs="unbounded" minOccurs="0"/>
+   </xs:sequence>
+  </xs:complexType>
+
+ </xs:element>
+
+ <xs:complexType name="Message">
+
+   <xs:sequence>
+
+    <xs:element name="esn" type="xs:string">
+     <xs:annotation>
+      <xs:documentation>
+       This is the DEVICE ESN field
+      </xs:documentation>
+     </xs:annotation>
+    </xs:element>
+
+    <xs:element name="esnName" type="xs:string" minOccurs="0"/>
+
+    <xs:element name="messageType" type="xs:string">
+     <xs:annotation>
+      <xs:documentation>
+       One of the defined types
+      </xs:documentation>
+     </xs:annotation>
+    </xs:element>
+
+    <xs:element name="messageDetail" type="xs:string" minOccurs="0">
+     <xs:annotation>
+      <xs:documentation>
+       Detailed Message in TEXT
+      </xs:documentation>
+     </xs:annotation>
+    </xs:element>
+
+    <xs:element name="timestamp" type="xs:dateTime">
+     <xs:annotation>
+      <xs:documentation>
+       Time Message sent in GMT time
+      </xs:documentation>
+     </xs:annotation>
+    </xs:element>
+
+    <xs:element name="timeInGMTSecond" type="xs:string" minOccurs="0"/>
+
+    <xs:element name="latitude" type="xs:float" minOccurs="0"/>
+
+    <xs:element name="longitude" type="xs:float" minOccurs="0"/>
+
+    <xs:element name="nearestTown" type="xs:string" minOccurs="0"/>
+
+    <xs:element name="nearestTownDistance" type="xs:string" minOccurs="0"/>
+
+   </xs:sequence>
+ </xs:complexType>
+</xs:schema>
