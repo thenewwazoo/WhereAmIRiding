@@ -7,7 +7,7 @@ from cgi import escape
 render = web.template.render('templates/')
 
 urls = (
-    '/(.*)', 'index',
+    '/(.*)/', 'index',
 )
 
 class index:

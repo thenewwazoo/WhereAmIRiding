@@ -37,5 +37,5 @@ handlers:
 - url: /register/
   script: registration.registration_app
 
-- url: /.*
+- url: /(.*)
   script: main.app

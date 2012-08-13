@@ -4,7 +4,7 @@ import web
 import json
 
 urls = (
-  '/prefs/(.*)', 'prefs'
+  '/prefs/(.*)/', 'prefs'
 )
 
 prefs_app = web.application(urls, locals()).wsgifunc()

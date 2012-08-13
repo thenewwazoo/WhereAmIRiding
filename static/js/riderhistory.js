@@ -23,7 +23,7 @@ var markerImages = {
 // this is hacky. fix the preferences model
 // seriously. ignore the way this works. it needs a lot of re-thinking
 function getControlsOptions() {
-  jQuery.getJSON('/prefs/' + riderid, function(opts) {
+  jQuery.getJSON('/prefs/' + riderid + "/", function(opts) {
     controlsOptions.disableDefaultUI = opts.disable_std_ui;
     controlsOptions.streetViewControl = opts.gmaps_controls;
     controlsOptions.panControl = opts.gmaps_controls;
@@ -51,7 +51,7 @@ function getRideHistory() {
 function getHistoryData(newerthan) {
   var historyArray = ridePath.getPath();
 
-  var histURL = "/riderhistory/" + riderid + (newerthan > 0 ? "?tstamp="+newerthan : "");
+  var histURL = "/riderhistory/" + riderid + "/" + (newerthan > 0 ? "?tstamp="+newerthan : "");
   jQuery.getJSON(histURL, function(hist) {
     jQuery.each( hist, function(i, entry) {
       var eventidx = entry['id'];
@@ -98,7 +98,7 @@ function updateRiderPosMarker()
 
 function getEventInfo(marker, riderevent) {
   jQuery.ajax({
-    url: "/eventinfo/" + riderid + "/" + riderevent,
+    url: "/eventinfo/" + riderid + "/" + riderevent + "/",
     success: function(data) {
       infowindow.setContent(data);
       infowindow.open(map, marker);

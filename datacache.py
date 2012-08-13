@@ -9,8 +9,8 @@ from datamodels import SPOTMessageRecord, SPOTUser
 from google.appengine.api import taskqueue
 from google.appengine.ext import db
 
-cacheupdate_app = web.application( ('/update', 'CacheUpdateHandler'), locals() ).wsgifunc()
-cacheworker_app = web.application( ('/worker', 'CacheWorker'), locals() ).wsgifunc()
+cacheupdate_app = web.application( ('/cache/update', 'CacheUpdateHandler'), locals() ).wsgifunc()
+cacheworker_app = web.application( ('/cache/worker', 'CacheWorker'), locals() ).wsgifunc()
 
 class CacheUpdateHandler:
 	from google.appengine.api import taskqueue

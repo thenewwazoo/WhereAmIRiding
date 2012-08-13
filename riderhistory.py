@@ -5,7 +5,7 @@ import json
 import time
 
 urls = (
-  '/riderhistory/(.*)', 'riderhistory'
+  '/riderhistory/(.*)/', 'riderhistory'
 )
 
 riderhistory_app = web.application(urls, locals()).wsgifunc()

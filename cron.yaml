@@ -1,0 +1,4 @@
+cron:
+- description: get fresh SPOT data
+  url: /cache/update
+  schedule: every 15 minutes

@@ -6,7 +6,7 @@ import json
 render = web.template.render('templates/')
 
 urls = (
-  '/eventinfo/(.*)/(.*)', 'eventinfo'
+  '/eventinfo/(.*)/(.*)/', 'eventinfo'
 )
 
 eventinfo_app = web.application(urls, locals()).wsgifunc()

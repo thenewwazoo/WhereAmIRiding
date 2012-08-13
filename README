@@ -1,7 +1,30 @@
 
+
+URLs ending with a slash are for getting information, or for 
+ situations where a useful response is expected.
+
+Examples:
+ /eventinfo/<userid>/<eventid>/    -- Gets information about an event
+ /register/                        -- Gets information about registering
+
+---
+
+URLs not ending in slashes can be thought of as commands, or
+ for situations where a useful response is NOT expected. These are
+ not exposed to end-users
+
+Examples:
+ /cache/update                     -- Triggers an update of the cache
+
+---
+
 web/ is the standard distribution of web.py. easiest just to check it in here.
+
+---
 
 GAE requires that you compile templates. to do that, run
 $ python web/template.py --compile templates
+
+---
 
 this code works best when modified while listening to trance or house music.
