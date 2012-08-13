@@ -6,12 +6,12 @@ import web
 from anticsrf import csrf_token, csrf_protected
 
 urls = (
-	'/', "RegHandler"
+	'/register/*', "RegHandler"
 )
 
 dataform = SPOTUser.buildForm()
 
-registration_app = web.application(urls, locals())
+registration_app = web.application(urls, locals()).wsgifunc()
 
 render = web.template.render('templates/', globals={'csrf_token':csrf_token})
 

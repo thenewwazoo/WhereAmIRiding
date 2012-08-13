@@ -6,8 +6,10 @@ import json
 render = web.template.render('templates/')
 
 urls = (
-  '/(.*)/(.*)', 'eventinfo'
+  '/eventinfo/(.*)/(.*)', 'eventinfo'
 )
+
+eventinfo_app = web.application(urls, locals()).wsgifunc()
 
 class eventinfo:
   def GET(self, riderid, eventid):
@@ -22,5 +24,3 @@ class eventinfo:
     msgtype = "OK Button"
     message = "This is a test message that is not dynamic in nature"
     return render.infowindow(username, eventid, time, date, lat, lng, msgtype, message)
-
-eventinfo_app = web.application(urls, locals())

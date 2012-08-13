@@ -51,7 +51,7 @@ function getRideHistory() {
 function getHistoryData(newerthan) {
   var historyArray = ridePath.getPath();
 
-  var histURL = "/ridehistory/" + riderid + (newerthan > 0 ? "?tstamp="+newerthan : "");
+  var histURL = "/riderhistory/" + riderid + (newerthan > 0 ? "?tstamp="+newerthan : "");
   jQuery.getJSON(histURL, function(hist) {
     jQuery.each( hist, function(i, entry) {
       var eventidx = entry['id'];

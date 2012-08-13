@@ -4,8 +4,10 @@ import web
 import json
 
 urls = (
-  '/(.*)', 'prefs'
+  '/prefs/(.*)', 'prefs'
 )
+
+prefs_app = web.application(urls, locals()).wsgifunc()
 
 class prefs:
   def GET(self, username):
@@ -25,11 +27,10 @@ class prefs:
     #  'mapTypeID': 'google.maps.MapTypeId.TERRAIN'
     #}
     prefsdict = {
+      'username': username,
       'disable_std_ui': True,
       'gmaps_controls': True,
       
     }
     web.header('Content-Type', 'application/json')
     return json.dumps(prefsdict)
-
-prefs_app = web.application(urls, locals())

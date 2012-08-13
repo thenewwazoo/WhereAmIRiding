@@ -21,5 +21,21 @@ handlers:
   mime_type: text/plain
   expiration: 10000d
 
+- url: /cache/(.*)
+  script: datacache.cache\1_app
+  login: admin
+
+- url: /prefs/(.*)
+  script: prefs.prefs_app
+
+- url: /riderhistory/(.*)
+  script: riderhistory.riderhistory_app
+
+- url: /eventinfo/(.*)
+  script: eventinfo.eventinfo_app
+
+- url: /register/
+  script: registration.registration_app
+
 - url: /.*
-  script: dynmap.app
+  script: main.app
