@@ -1,0 +1,10 @@
+$def with (email, form, logout)
+
+<p>Hello, $email!</p>
+<form name="main" method="post"> 
+$if not form.valid: <p class="error">Please enter your registration information:</p>
+<input type=hidden name=csrf_token value="$csrf_token()">
+$:form.render()
+<input type="submit" />
+</form>
+<p><a href="$logout">Log out</a></p>

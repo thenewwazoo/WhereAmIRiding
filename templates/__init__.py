@@ -22,6 +22,27 @@ infowindow = CompiledTemplate(infowindow, 'templates/infowindow.html')
 join_ = infowindow._join; escape_ = infowindow._escape
 
 # coding: utf-8
+def registration (email, form, logout):
+    __lineoffset__ = -4
+    loop = ForLoop()
+    self = TemplateResult(); extend_ = self.extend
+    extend_([u'\n'])
+    extend_([u'<p>Hello, ', escape_(email, True), u'!</p>\n'])
+    extend_([u'<form name="main" method="post"> \n'])
+    if not form.valid:
+        extend_([u'<p class="error">Please enter your registration information:</p>\n'])
+    extend_([u'<input type=hidden name=csrf_token value="', escape_(csrf_token(), True), u'">\n'])
+    extend_([escape_(form.render(), False), u'\n'])
+    extend_([u'<input type="submit" />\n'])
+    extend_([u'</form>\n'])
+    extend_([u'<p><a href="', escape_(logout, True), u'">Log out</a></p>\n'])
+
+    return self
+
+registration = CompiledTemplate(registration, 'templates/registration.html')
+join_ = registration._join; escape_ = registration._escape
+
+# coding: utf-8
 def usermap (ridername, riderid, riderurl, riderglId):
     __lineoffset__ = -4
     loop = ForLoop()

@@ -1,14 +1,20 @@
 #!/usr/bin/env python
 
 import web
+
+import datacache
+import registration
 import prefs
 import ridehistory
 import eventinfo
+
 from cgi import escape
 
 render = web.template.render('templates/')
 
 urls = (
+    '/cache', datacache.cacheupdate_app,
+    '/register', registration.registration_app,
     '/prefs', prefs.prefs_app,
     '/ridehistory', ridehistory.ridehistory_app,
     '/eventinfo', eventinfo.eventinfo_app,
