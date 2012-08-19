@@ -1,4 +1,15 @@
 
+---
+
+Paid options?
+ - caching of data is pretty obvious
+ - maybe viewing more than a certain amount of a rider's history? probably not.
+ - custom images and URLs!
+ - ideally, paid options would be bought by the rider, not the viewer, and would include some sort of
+    back-end data munging or storage.
+ - maybe a paid option could be unlimited (or even just >1) info data feeds (latitude? other?)
+
+---
 
 URLs ending with a slash are for getting information, or for 
  situations where a useful response is expected.

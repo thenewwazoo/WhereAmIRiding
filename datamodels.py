@@ -42,6 +42,15 @@ class SPOTMessageRecord(db.Model):
 	nearestTown = db.StringProperty()
 	nearestTownDistance = db.StringProperty()
 
+	def getSerializeable(self):
+		outdict = db.to_dict(self)
+		outdict['latitude'] = outdict['location'].lat
+		outdict['longitude'] = outdict['location'].lon
+		del outdict['location']
+		outdict['spotuser'] = str(outdict['spotuser'])
+		outdict['timestamp'] = outdict['timestamp'].strftime("%Y-%m-%dT%H:%M:%S")
+		return outdict
+
 	@classmethod
 	def fromMessageTag(recordClass, msgElement):
 		return recordClass( **dictFromMessageTag(msgElement) )

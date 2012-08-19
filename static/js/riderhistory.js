@@ -2,14 +2,12 @@
 // var riderid = "username"
 
 var controlsOptions = {};
-var ridePath;
 var infowindow = new google.maps.InfoWindow();
 var map;
 
-var riderMarkers = [];
 var lastUpdate = Math.round(Date.now() / 1000);
 
-var defaultZoom = 7;
+var defaultZoom = 17;
 var isFullZoom = false;
 
 var markerImages = {
@@ -40,60 +38,115 @@ function getControlsOptions() {
 
 function updateMap() {
   console.log("updating map since " + lastUpdate);
-  getHistoryData(lastUpdate);
+  getHistoryData(true);
   lastUpdate = Math.round(Date.now() / 1000);
 }
 
-function getRideHistory() {
-  getHistoryData(0);
+var historyData = new function () {
+  this.historyArray = new Array();
+  this.ridePath = new google.maps.Polyline({
+        strokeColor: "#0000c8",
+        strokeOpacity: 2,
+        strokeWeight: 2
+        });
+
+  this.addEntry = function(newEvent) {
+    // keep historyArray ordered
+    if (this.historyArray.length == 0 || this.historyArray[0].timestamp > newEvent.timestamp) {
+      this.historyArray.splice(0, 0, newEvent);
+      this.getRidePath().getPath().insertAt(0, newEvent.position);
+      return 0;
+    }
+    for (var i = this.historyArray.length - 1; i >= 0; --i) {
+      var event = this.historyArray[i];
+      if (event.timestamp < newEvent.timestamp) {
+        this.historyArray.splice(i + 1, 0, newEvent);
+        this.getRidePath().getPath().insertAt(i + 1, newEvent.position);
+      }
+    }
+  };
+
+  this.length = function() {}
+
+  this.getEventAt = function(index) {
+    return this.historyArray[index];
+  };
+
+  this.getLastEvent = function() {
+    return this.historyArray[this.historyArray.length - 1];
+  };
+
+  this.getRidePath = function() {
+    return this.ridePath;
+  }
+
 }
 
-function getHistoryData(newerthan) {
-  var historyArray = ridePath.getPath();
+function SPOTMessageRecord(jsonDatum) {
+  // constructor section
+  this.esn = jsonDatum['esn'];
+  if ('esnName' in jsonDatum) { this.esnName = jsonDatum['esnName']; }
+  this.messageType = jsonDatum['messageType'];
+  if ('messageDetail' in jsonDatum) { this.messageDetail = jsonDatum['messageDetail']; }
+  // jsonDatum['timestamp'] is an ISO8601 string
+  this.timestamp = new Date(jsonDatum['timestamp']);
+  if ('timeInGMTSecond' in jsonDatum) {
+    this.timeInGMTSecond = parseInt(jsonDatum['timeInGMTSecond']); 
+  } else { 
+    /* convert ISO8601 to epoch time */ 
+  }
+  if ('latitude' in jsonDatum && 'longitude' in jsonDatum) { this.position = new google.maps.LatLng(parseFloat(jsonDatum['latitude']), parseFloat(jsonDatum['longitude'])); }
+  if ('nearestTown' in jsonDatum) { this.nearestTown = jsonDatum['nearestTown']; }
+  if ('nearestTownDistance' in jsonDatum) { this.nearestTownDistance = parseFloat(jsonDatum['nearestTownDistance']); }
+  // end constructor section
 
-  var histURL = "/riderhistory/" + riderid + "/" + (newerthan > 0 ? "?tstamp="+newerthan : "");
-  jQuery.getJSON(histURL, function(hist) {
-    jQuery.each( hist, function(i, entry) {
-      var eventidx = entry['id'];
-      var position = new google.maps.LatLng(entry['lat'], entry['lon']);
-      console.log('added hist ' + eventidx + ' @ ' + position);
-      historyArray.setAt(eventidx, position);
+  this.getMapPin = function(map) {
+    if ('mapPin' in this) {
+      return this.mapPin;
+    } else {
+      this.mapPin = new google.maps.Marker( {
+        position: this.position,
+        icon: markerImages[this.messageType],
+        title: "(" + this.position.toString() + ") @ [" + this.timestamp + "]"
+      });
+      return this.mapPin;
+    }
+  };
+}
 
-      var eventtype = entry['type'];
-      addMapPin(position, eventtype, eventidx);
+function getHistoryData(isUpdate) {
+  var histURL = "/riderhistory/" + riderid + "/";
 
-    });
+  jQuery.getJSON( histURL,
+    { tstamp: (isUpdate ? lastUpdate : 0) },
+    function (riderHist, textStatus, jqXHR) {
 
-    updateRiderPosMarker();
-    zoomMap(defaultZoom);
+      jQuery.each(riderHist, function(i, entry) {
+        var spotmsg = new SPOTMessageRecord(entry);
+        var msgpin = spotmsg.getMapPin();
+        msgpin.setMap(map);
+        google.maps.event.addListener(msgpin, 'click', function() {
+          infowindow.close();
+          getEventInfo(msgpin, spotmsg);
+        });
+        historyData.addEntry(spotmsg);
+      });
+      zoomMap(defaultZoom);
+      updateRiderPosMarker();
 
-  });
-};
+    }
+  );
 
-function addMapPin(position, eventtype, index) {
-  var icon = markerImages[eventtype];
-  var title = "[#" + index + "] @ (" + position.toString() + ")";
-  var marker = new google.maps.Marker({ position: position, 
-                                    map: map, 
-                                    icon: icon,
-                                    zIndex: 1,
-                                    title: title
-                                  });
-  google.maps.event.addListener(marker, 'click', function () {
-    infowindow.close();
-    getEventInfo(marker, index);
-  });
-  riderMarkers[index] = marker;
 }
 
 function updateRiderPosMarker()
 {
-  jQuery.each(riderMarkers, function(i, marker){
-    if (marker.getIcon() == markerImages['END']) {
-      marker.setIcon(markerImages['TRACK']);
+  jQuery.each(historyData.historyArray, function(i, histEvent){
+    if (histEvent.getMapPin().getIcon() == markerImages['END']) {
+      histEvent.getMapPin().setIcon(markerImages[histEvent.messageType]);
     }
   });
-  riderMarkers[riderMarkers.length - 1].icon = markerImages['END'];
+  historyData.getLastEvent().getMapPin().setIcon(markerImages['END']);
 }
 
 function getEventInfo(marker, riderevent) {
@@ -106,41 +159,17 @@ function getEventInfo(marker, riderevent) {
   });
 }
 
-
-
-function initialize() {
-  var SF = new google.maps.LatLng(37.7793, -122.4192);
-  var initialOpts = { center: SF, // this is mandatory, but immediately gets changed
-          zoom: 12,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-
-  map = new google.maps.Map(document.getElementById("map_canvas"), initialOpts);
-
-  getControlsOptions();
-
-  ridePath = new google.maps.Polyline({
-        strokeColor: "#0000c8",
-        strokeOpacity: 2,
-        strokeWeight: 2
-        });
-  ridePath.setMap(map);
-
-  getRideHistory();
-
-  setInterval(updateMap, 1000 * 60 * 10);
-
-}
-
 function zoomMap(zoomPoints) {
   var bounds = new google.maps.LatLngBounds();
-  if (typeof zoomPoints === 'undefined') {
-    zoomPoints = ridePath.getPath().length;
-  }
-  var pathlen = ridePath.getPath().length;
+  var pathlen = historyData.getRidePath().getPath().length;
 
-  bounds.extend( ridePath.getPath().getAt( pathlen - 1) );
-  bounds.extend( ridePath.getPath().getAt( pathlen - zoomPoints < 0 ? 0 : pathlen - zoomPoints ) );
+  if (typeof zoomPoints === 'undefined') {
+    zoomPoints = historyData.getRidePath().getPath().length;
+  }
+
+  for (var i = zoomPoints; i > 0; --i) {
+    bounds.extend( historyData.getEventAt( historyData.historyArray.length - i ).position );
+  }
 
   map.fitBounds(bounds);
 }
@@ -153,4 +182,23 @@ function toggleZoom() {
     zoomMap();
     isFullZoom = true;
   }
+}
+
+function initialize() {
+
+  var SF = new google.maps.LatLng(37.7793, -122.4192);
+  var initialOpts = { center: SF, // this is mandatory, but immediately gets changed
+          zoom: 12,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+  map = new google.maps.Map(document.getElementById("map_canvas"), initialOpts);
+
+  getControlsOptions();
+
+  historyData.getRidePath().setMap(map);
+  getHistoryData(false);
+
+  setInterval(updateMap, 1000 * 60 * 10);
+
 }

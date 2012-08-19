@@ -43,7 +43,7 @@ registration = CompiledTemplate(registration, 'templates/registration.html')
 join_ = registration._join; escape_ = registration._escape
 
 # coding: utf-8
-def usermap (ridername, riderid, riderurl, riderglId):
+def usermap (riderid, riderurl, riderglId):
     __lineoffset__ = -4
     loop = ForLoop()
     self = TemplateResult(); extend_ = self.extend
@@ -55,7 +55,7 @@ def usermap (ridername, riderid, riderurl, riderglId):
     extend_([u'<link rel="stylesheet" type="text/css" href="/static/css/default.css" />\n'])
     extend_([u'<link rel="stylesheet" type="text/css" href="/static/css/style.css" />\n'])
     extend_([u'\n'])
-    extend_([u'<title>Trip Tracker - ', escape_(ridername, True), u'</title>\n'])
+    extend_([u'<title>Trip Tracker - ', escape_(riderid, True), u'</title>\n'])
     extend_([u'\n'])
     extend_([u'<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=weather&sensor=false"></script>\n'])
     extend_([u'<!-- <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAE46eJan0szd83J6Fa9e3tlo043KHXB00&libraries=weather&sensor=false"></script> -->\n'])
@@ -102,7 +102,7 @@ def usermap (ridername, riderid, riderurl, riderglId):
     extend_([u'        </div>\n'])
     extend_([u'\n'])
     extend_([u'        <div id="images">\n'])
-    extend_([u"          <a href='", escape_(riderurl, True), u"' title='", escape_(ridername, True), u"' alt='", escape_(ridername, True), u"' target='_blank'>\n"])
+    extend_([u"          <a href='", escape_(riderurl, True), u"' title='", escape_(riderid, True), u"' alt='", escape_(riderid, True), u"' target='_blank'>\n"])
     extend_([u"      <img src='/static/images/users/", escape_((riderid), True), u'.png\' width=\'100\' onerror="this.src=\'/static/images/logo-icon2.png\';">\n'])
     extend_([u'    </a>\n'])
     extend_([u'        </div>\n'])

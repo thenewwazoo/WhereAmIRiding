@@ -1,4 +1,4 @@
-$def with (ridername, riderid, riderurl, riderglId)
+$def with (riderid, riderurl, riderglId)
 
 <!DOCTYPE html>
 <html>
@@ -7,7 +7,7 @@ $def with (ridername, riderid, riderurl, riderglId)
 <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
 
-<title>Trip Tracker - $ridername</title>
+<title>Trip Tracker - $riderid</title>
 
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=weather&sensor=false"></script>
 <!-- <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAE46eJan0szd83J6Fa9e3tlo043KHXB00&libraries=weather&sensor=false"></script> -->
@@ -54,7 +54,7 @@ var riderid = "$riderid";
 	</div>
 
 	<div id="images">
-	  <a href='$riderurl' title='$ridername' alt='$ridername' target='_blank'>
+	  <a href='$riderurl' title='$riderid' alt='$riderid' target='_blank'>
       <img src='/static/images/users/$(riderid).png' width='100' onerror="this.src='/static/images/logo-icon2.png';">
     </a>
 	</div>

@@ -1,6 +1,8 @@
 THINGS TO DO AND FIX:
 
- - build a user model, including login/logout
- - build a registration mechanism
- - finish SPOT API data processing cron job
  - modify ride history to use GAE backend
+ - update javascript to deal with schema change underlying events
+    do I need to worry about event IDs being stored for passing to
+      eventinfo window generator?
+    do I need to worry about indexes in the ride path? I think I can just
+      use whatever index I want.
