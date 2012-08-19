@@ -2,17 +2,15 @@ from web.template import CompiledTemplate, ForLoop, TemplateResult
 
 
 # coding: utf-8
-def infowindow (username, eventid, time, date, lat, lng, msgtype, message):
+def infowindow (username, timestamp, location, msgtype, message):
     __lineoffset__ = -4
     loop = ForLoop()
     self = TemplateResult(); extend_ = self.extend
     extend_([u'\n'])
     extend_([u'<div id="content"><div id="siteNotice"></div><hr><table cellspacing="1" cellpadding="1" border="0" width="280">\n'])
     extend_([u'<tr><td align="right"><strong>User:</strong></td><td align="center"><strong>', escape_(username, True), u'</strong></td></tr>\n'])
-    extend_([u'<tr><td align="right"><strong>Point:</strong></td><td align="center">#', escape_(eventid, True), u'</td></tr>\n'])
-    extend_([u'<tr><td align="right"><strong>Time:</strong></td><td align="center">', escape_(time, True), u'</td></tr>\n'])
-    extend_([u'<tr><td align="right"><strong>Date:</strong></td><td align="center">', escape_(date, True), u'</td></tr>\n'])
-    extend_([u'<tr><td align="right"><strong>Lat/Lng:</strong></td><td align="center"><a href="http://maps.google.com/maps?q=', escape_(lat, True), u',', escape_(lng, True), u'" target="_blank">', escape_(lat, True), u', ', escape_(lng, True), u'</a></td></tr>\n'])
+    extend_([u'<tr><td align="right"><strong>Time:</strong></td><td align="center">', escape_(timestamp, True), u'</td></tr>\n'])
+    extend_([u'<tr><td align="right"><strong>Lat/Lng:</strong></td><td align="center"><a href="http://maps.google.com/maps?q=', escape_(location, True), u'" target="_blank">', escape_(location, True), u'</a></td></tr>\n'])
     extend_([u'<tr><td align="right"><strong>Type:</strong></td><td align="center">', escape_(msgtype, True), u'</td></tr>\n'])
     extend_([u'<tr><td align="right"><strong>Message:</strong></td><td align="center">', escape_(message, True), u'</td></tr></tr></table><hr></p>\n'])
 

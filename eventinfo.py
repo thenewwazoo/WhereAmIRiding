@@ -3,6 +3,11 @@
 import web
 import json
 
+import logging
+
+from google.appengine.ext import db
+from datamodels import SPOTUser, SPOTMessageRecord
+
 render = web.template.render('templates/')
 
 urls = (
@@ -16,11 +21,16 @@ class eventinfo:
     # select (userinfo.username, events.time, events.date, events.lat, events.lng, events.msgtype, events.message)
     #  from userinfo, events
     #  where userinfo.riderid == $riderid and events.riderid == $riderid and events.eventid == $eventid
-    username = "bmatt the loon"
-    time = "6:55am PST"
-    date = "6/28/2012 - Thursday"
-    lat = 33.10391
-    lng = -117.21759
-    msgtype = "OK Button"
-    message = "This is a test message that is not dynamic in nature"
-    return render.infowindow(username, eventid, time, date, lat, lng, msgtype, message)
+    # (...or, y'know, don't use relational DBs)
+
+    logging.info("getinfo %s %s" % (riderid, eventid))
+
+    userrec = SPOTUser.get(db.Key(encoded=riderid))
+    eventrec = SPOTMessageRecord.get(db.Key(encoded=eventid))
+
+    username = userrec.userDispName
+    timestamp = eventrec.timestamp
+    location = eventrec.location
+    msgtype = eventrec.messageType
+    message = eventrec.messageDetail
+    return render.infowindow(username, timestamp, location, msgtype, message)

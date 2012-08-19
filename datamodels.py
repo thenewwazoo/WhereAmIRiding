@@ -49,6 +49,7 @@ class SPOTMessageRecord(db.Model):
 		del outdict['location']
 		outdict['spotuser'] = str(outdict['spotuser'])
 		outdict['timestamp'] = outdict['timestamp'].strftime("%Y-%m-%dT%H:%M:%S")
+		outdict['key'] = str(self.key()) # to_dict doesn't actually include this because it's not a property
 		return outdict
 
 	@classmethod

@@ -1,8 +1,3 @@
 THINGS TO DO AND FIX:
 
- - modify ride history to use GAE backend
- - update javascript to deal with schema change underlying events
-    do I need to worry about event IDs being stored for passing to
-      eventinfo window generator?
-    do I need to worry about indexes in the ride path? I think I can just
-      use whatever index I want.
+ - timestamps are currently GMT - localize them

@@ -85,11 +85,14 @@ var historyData = new function () {
 function SPOTMessageRecord(jsonDatum) {
   // constructor section
   this.esn = jsonDatum['esn'];
-  if ('esnName' in jsonDatum) { this.esnName = jsonDatum['esnName']; }
   this.messageType = jsonDatum['messageType'];
+  this.timestamp = new Date(jsonDatum['timestamp']);
+  this.key = jsonDatum['key'];
+  this.spotuserkey = jsonDatum['spotuser'];
+
+  if ('esnName' in jsonDatum) { this.esnName = jsonDatum['esnName']; }
   if ('messageDetail' in jsonDatum) { this.messageDetail = jsonDatum['messageDetail']; }
   // jsonDatum['timestamp'] is an ISO8601 string
-  this.timestamp = new Date(jsonDatum['timestamp']);
   if ('timeInGMTSecond' in jsonDatum) {
     this.timeInGMTSecond = parseInt(jsonDatum['timeInGMTSecond']); 
   } else { 
@@ -127,7 +130,7 @@ function getHistoryData(isUpdate) {
         msgpin.setMap(map);
         google.maps.event.addListener(msgpin, 'click', function() {
           infowindow.close();
-          getEventInfo(msgpin, spotmsg);
+          getEventInfo(spotmsg);
         });
         historyData.addEntry(spotmsg);
       });
@@ -146,15 +149,17 @@ function updateRiderPosMarker()
       histEvent.getMapPin().setIcon(markerImages[histEvent.messageType]);
     }
   });
-  historyData.getLastEvent().getMapPin().setIcon(markerImages['END']);
+  if (historyData.getLastEvent().messageType == 'TRACK') {
+    historyData.getLastEvent().getMapPin().setIcon(markerImages['END']);
+  }
 }
 
-function getEventInfo(marker, riderevent) {
+function getEventInfo(spotmsg) {
   jQuery.ajax({
-    url: "/eventinfo/" + riderid + "/" + riderevent + "/",
+    url: "/eventinfo/" + spotmsg.spotuserkey + "/" + spotmsg.key + "/",
     success: function(data) {
       infowindow.setContent(data);
-      infowindow.open(map, marker);
+      infowindow.open(map, spotmsg.getMapPin());
     }
   });
 }
