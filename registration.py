@@ -1,4 +1,5 @@
-from google.appengine.api import users
+#from google.appengine.api import users
+import Facebook as users
 
 from datamodels import SPOTUser
 from GoogleStore import GoogleStore
@@ -28,7 +29,7 @@ class RegHandler:
 		web.header("Cache-Control", "no-store, no-cache, must-revalidate")
 		user = users.get_current_user()
 		if not user: # user is not logged in. forward to login page, with breadcrumb
-			raise web.seeother( users.create_login_url(web.ctx.home + web.ctx.fullpath), absolute=True)
+			raise web.seeother( users.create_login_url(web.ctx.home + web.ctx.path), absolute=True)
 		userrec = SPOTUser.get_by_key_name(user.user_id())
 		regform = dataform()
 		if userrec is not None:
