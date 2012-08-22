@@ -29,7 +29,7 @@ def registration (email, form, logout):
     extend_([u'<form name="main" method="post"> \n'])
     if not form.valid:
         extend_([u'<p class="error">Please enter your registration information:</p>\n'])
-    extend_([u'<input type=hidden name=csrf_token value="', escape_(csrf_token(), True), u'">\n'])
+    extend_([u'<input type=hidden name=state value="', escape_(csrf_token(), True), u'">\n'])
     extend_([escape_(form.render(), False), u'\n'])
     extend_([u'<input type="submit" />\n'])
     extend_([u'</form>\n'])

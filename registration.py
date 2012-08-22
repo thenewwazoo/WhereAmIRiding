@@ -1,6 +1,7 @@
 from google.appengine.api import users
 
 from datamodels import SPOTUser
+from GoogleStore import GoogleStore
 
 import web
 from anticsrf import csrf_token, csrf_protected
@@ -11,9 +12,16 @@ urls = (
 
 dataform = SPOTUser.buildForm()
 
-registration_app = web.application(urls, locals()).wsgifunc()
+app = web.application(urls, locals())
+registration_app = app.wsgifunc()
+session = web.session.Session(app, GoogleStore('WIAR'))
 
-render = web.template.render('templates/', globals={'csrf_token':csrf_token})
+def session_hook():
+    web.ctx.session = session
+
+app.add_processor(web.loadhook(session_hook))
+
+render = web.template.render('templates/', globals={'csrf_token': csrf_token})
 
 class RegHandler:
 	def GET(self):

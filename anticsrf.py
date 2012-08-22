@@ -1,5 +1,6 @@
 
 import web
+from GoogleStore import GoogleStore
 
 # pass to render object like so:
 # render = web.template.render('templates/', globals={'csrf_token':csrf_token})
@@ -7,13 +8,13 @@ import web
 def csrf_token():
 	"""Should be called from the form page's template:
 	<form method=post action="">
- 		<input type=hidden name=csrf_token value="$csrf_token()">
+ 		<input type=hidden name=state value="$csrf_token()">
 		...
 	</form>"""
-	if not web.cookies().get('csrf_token'):
+	if not web.ctx.session.has_key('state'):
 		from uuid import uuid4
-		web.setcookie('csrf_token', uuid4().hex, 1800)
-	return web.cookies().get('csrf_token')
+		web.ctx.session['state'] = uuid4().hex
+	return web.ctx.session['state']
 
 def csrf_protected(f):
 	"""Usage:
@@ -22,7 +23,7 @@ def csrf_protected(f):
 		   ..."""
 	def decorated(*args,**kwargs):
 		inp = web.input()
-		if not (inp.has_key('csrf_token') and inp.csrf_token==web.cookies().get('csrf_token')):
+		if not ( inp.has_key('state') and inp.state == web.ctx.session.pop('state', None) ):
 			raise web.HTTPError(
 				"400 Bad request",
 				{'content-type':'text/html'},
