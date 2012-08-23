@@ -20,6 +20,21 @@ infowindow = CompiledTemplate(infowindow, 'templates/infowindow.html')
 join_ = infowindow._join; escape_ = infowindow._escape
 
 # coding: utf-8
+def login (links_dict):
+    __lineoffset__ = -4
+    loop = ForLoop()
+    self = TemplateResult(); extend_ = self.extend
+    extend_([u'\n'])
+    extend_([u'<p>Choose your login method:</p>\n'])
+    for provider, link in loop.setup(links_dict.items()):
+        extend_([u'<p><a href="', escape_(link, True), u'">', escape_(provider, True), u'</a></p>\n'])
+
+    return self
+
+login = CompiledTemplate(login, 'templates/login.html')
+join_ = login._join; escape_ = login._escape
+
+# coding: utf-8
 def registration (email, form, logout):
     __lineoffset__ = -4
     loop = ForLoop()

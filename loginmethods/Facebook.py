@@ -29,25 +29,32 @@ def create_login_url(redirect_url):
 	return dialog_url % dialog_args
 
 def get_current_user():
+	logging.info("getting access token from session")
 	if web.ctx.session.has_key('access_token'):
+		logging.info("user already has an access token: %s" % web.ctx.session['access_token'])
 		return _build_user(web.ctx.session['access_token'])
 
+	logging.info("user does not have an access token")
 	req_data = web.input(code="nocode")
 	if req_data.code == "nocode":
 		return None
 	logging.info("code is %s" % req_data.code)
 
-	return _get_access_token(req_data.code)
+	access_token = _get_access_token(req_data.code)
+	return _build_user(access_token)
 
 def _build_user(access_token):
 
+	logging.info("building user...")
 	graph_url = "https://graph.facebook.com/me?%s"
 	graph_args = urllib.urlencode({
 		'access_token': access_token
 		})
 
 	userinfo = json.load( urllib.urlopen(graph_url % graph_args) )
+	logging.info("got user data: %s" % userinfo)
 	if 'error' in userinfo:
+		logging.info("oopsie! something error'd.")
 		return None
 
 	return FBUser(userinfo)
@@ -76,7 +83,7 @@ def _get_access_token(code):
 	token_expiry = token_response['expires'][0]      #  "The dictionary keys are the unique query variable names and the values are lists of values for each name."
 	web.ctx.session['access_token'] = access_token
 
-	return _build_user(access_token)
+	return access_token
 
 class FBUser(object):
 	def __init__(self, jsonObj):

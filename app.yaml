@@ -34,7 +34,10 @@ handlers:
 - url: /eventinfo/(.*)
   script: eventinfo.eventinfo_app
 
-- url: /register/
+- url: /register/(.*)
+  script: registration.registration_app
+
+- url: /logout/
   script: registration.registration_app
 
 - url: /(.*)

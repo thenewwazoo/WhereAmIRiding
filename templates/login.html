@@ -1,0 +1,5 @@
+$def with (links_dict)
+
+<p>Choose your login method:</p>
+$for provider, link in links_dict.items():
+    <p><a href="$link">$provider</a></p>
