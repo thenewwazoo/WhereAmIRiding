@@ -88,10 +88,11 @@ class RegHandler:
 			userrec = SPOTUser.get_by_key_name(user.user_id())
 			if userrec is not None:
 				del formdata['userDispName'] # we don't allow users to alter their display names, once set
+			else:
+				dispname_colltest = SPOTUser.all().filter('userDispName =', formdata['userDispName']).get()
+				if dispname_colltest is not None and userrec.key() != dispname_colltest.key():
+					return _to_data_form(user, regform=regform, dispname_coll=True)
 			userrec = SPOTUser(key_name=user.user_id(), **formdata)
-			dispname_colltest = SPOTUser.all().filter('userDispName =', formdata['userDispName']).get()
-			if dispname_colltest is not None and userrec.key() != dispname_colltest.key():
-				return _to_data_form(user, regform=regform, dispname_coll=True)
 			userrec.put()
 			raise web.seeother( "/" )
 
