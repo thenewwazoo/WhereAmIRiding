@@ -1,8 +1,9 @@
-$def with (email, form, logout)
+$def with (email, form, logout, dispname_collision)
 
 <p>Hello, $email!</p>
 <form name="main" method="post"> 
 $if not form.valid: <p class="error">Please enter your registration information:</p>
+$if dispname_collision: <p class="error">That display name is already taken.</p>
 <input type=hidden name=state value="$csrf_token()">
 $:form.render()
 <input type="submit" />

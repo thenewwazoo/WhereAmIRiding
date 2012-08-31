@@ -35,7 +35,7 @@ login = CompiledTemplate(login, 'templates/login.html')
 join_ = login._join; escape_ = login._escape
 
 # coding: utf-8
-def registration (email, form, logout):
+def registration (email, form, logout, dispname_collision):
     __lineoffset__ = -4
     loop = ForLoop()
     self = TemplateResult(); extend_ = self.extend
@@ -44,6 +44,8 @@ def registration (email, form, logout):
     extend_([u'<form name="main" method="post"> \n'])
     if not form.valid:
         extend_([u'<p class="error">Please enter your registration information:</p>\n'])
+    if dispname_collision:
+        extend_([u'<p class="error">That display name is already taken.</p>\n'])
     extend_([u'<input type=hidden name=state value="', escape_(csrf_token(), True), u'">\n'])
     extend_([escape_(form.render(), False), u'\n'])
     extend_([u'<input type="submit" />\n'])
