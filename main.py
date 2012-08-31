@@ -17,8 +17,7 @@ urls = (
 class index:
     def GET(self, riderid):
         if riderid == "":
-            return "No user specified"
-            pass
+            return render.usermap(None, None, None)
         else:
             userrec = db.Query(SPOTUser).filter('userDispName =', riderid).get()
             if userrec is not None:

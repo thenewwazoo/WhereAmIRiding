@@ -1,7 +1,9 @@
 $def with (username, timestamp, location, msgtype, message)
 
 <div id="content"><div id="siteNotice"></div><hr><table cellspacing="1" cellpadding="1" border="0" width="280">
-<tr><td align="right"><strong>User:</strong></td><td align="center"><strong>$username</strong></td></tr>
+<tr><td align="right"><strong>User:</strong></td><td align="center"><strong>
+	<a href="/$username">$username</a>
+</strong></td></tr>
 <tr><td align="right"><strong>Time:</strong></td><td align="center">$timestamp</td></tr>
 <tr><td align="right"><strong>Lat/Lng:</strong></td><td align="center"><a href="http://maps.google.com/maps?q=$location" target="_blank">$location</a></td></tr>
 <tr><td align="right"><strong>Type:</strong></td><td align="center">$msgtype</td></tr>

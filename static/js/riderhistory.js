@@ -20,7 +20,7 @@ var markerImages = {
 
 // this is hacky. fix the preferences model
 // seriously. ignore the way this works. it needs a lot of re-thinking
-function getControlsOptions() {
+function getControlsOptions(riderid) {
   jQuery.getJSON('/prefs/' + riderid + "/", function(opts) {
     controlsOptions.disableDefaultUI = opts.disable_std_ui;
     controlsOptions.streetViewControl = opts.gmaps_controls;
@@ -36,9 +36,15 @@ function getControlsOptions() {
   });
 };
 
-function updateMap() {
+function updateHistoryMap() {
   console.log("updating map since " + lastUpdate);
-  getHistoryData(true);
+  getHistoryData(riderid, true);
+  lastUpdate = Math.round(Date.now() / 1000);
+}
+
+function updateRiderMap() {
+  console.log("updating map since " + lastUpdate);
+  getRiderPositions(true);
   lastUpdate = Math.round(Date.now() / 1000);
 }
 
@@ -64,6 +70,19 @@ var historyData = new function () {
         this.getRidePath().getPath().insertAt(i + 1, newEvent.position);
       }
     }
+  };
+
+  this.clearHistory = function() {
+    for (var i = 0; i < this.historyArray.length; i++) {
+      this.historyArray[i].setMap(null);
+      delete this.historyArray[i];
+    }
+    this.ridePath.setMap(null);
+    this.ridePath = new google.maps.Polyline({
+      strokeColor: "#0000c8",
+      strokeOpacity: 2,
+      strokeWeight: 2
+      });
   };
 
   this.length = function() {}
@@ -117,7 +136,7 @@ function SPOTMessageRecord(jsonDatum) {
   };
 }
 
-function getHistoryData(isUpdate) {
+function getHistoryData(riderid, isUpdate) {
   var histURL = "/riderhistory/" + riderid + "/";
 
   jQuery.getJSON( histURL,
@@ -140,6 +159,32 @@ function getHistoryData(isUpdate) {
     }
   );
 
+}
+
+function getRiderPositions(isUpdate) {
+  var posURL = "/riderhistory/";
+
+  if (isUpdate) {
+    historyData.clearHistory();
+  }
+
+  jQuery.getJSON( posURL,
+    { tstamp: (isUpdate ? lastUpdate: 0) },
+    function (riderPos, textStatus, jqXHR) {
+      jQuery.each(riderPos, function(i, entry) {
+        var spotmsg = new SPOTMessageRecord(entry);
+        var msgpin = spotmsg.getMapPin();
+        msgpin.setIcon(markerImages['END']); // FIXME should probably be user icons
+        msgpin.setMap(map);
+        google.maps.event.addListener(msgpin, 'click', function() {
+          infowindow.close();
+          getEventInfo(spotmsg);
+        });
+        historyData.addEntry(spotmsg);
+      });
+      zoomMap(); // show everyone on the map at once
+    }
+  );
 }
 
 function updateRiderPosMarker()
@@ -172,6 +217,10 @@ function zoomMap(zoomPoints) {
     zoomPoints = historyData.getRidePath().getPath().length;
   }
 
+  if (zoomPoints > pathlen) {
+    zoomPoints = pathlen;
+  }
+
   for (var i = zoomPoints; i > 0; --i) {
     bounds.extend( historyData.getEventAt( historyData.historyArray.length - i ).position );
   }
@@ -199,11 +248,19 @@ function initialize() {
 
   map = new google.maps.Map(document.getElementById("map_canvas"), initialOpts);
 
-  getControlsOptions();
+  if (riderid != "") {
+    getControlsOptions();
 
-  historyData.getRidePath().setMap(map);
-  getHistoryData(false);
+    historyData.getRidePath().setMap(map);
+    getHistoryData(riderid, false);
 
-  setInterval(updateMap, 1000 * 60 * 10);
+    setInterval(updateHistoryMap, 1000 * 60 * 10);    
+  }
+  else
+  {
+    getControlsOptions();
+    getRiderPositions(false);
+    setInterval(updateRiderMap, 1000*60*10);
+  }
 
 }

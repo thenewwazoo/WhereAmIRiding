@@ -7,7 +7,10 @@ $def with (riderid, riderurl, riderglId)
 <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
 
-<title>Trip Tracker - $riderid</title>
+$if riderid is not None:
+	<title>Trip Tracker - $riderid</title>
+$else:
+	<title>Where Am I Riding?</title>
 
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=weather&sensor=false"></script>
 <!-- <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAE46eJan0szd83J6Fa9e3tlo043KHXB00&libraries=weather&sensor=false"></script> -->
@@ -50,14 +53,25 @@ var riderid = "$riderid";
 	</div>
 
 	<div id="footer_spot_logo">
-	  <a href='http://share.findmespot.com/shared/faces/viewspots.jsp?glId=$riderglId' target='_blank'><img src='/static/images/spotlogo02.png' title='Click to see this user on FindMeSpot.com' alt='Click to see this user on FindMeSpot.com' width='48' ></a>
-	</div>
+$if riderglId:
+	<a href='http://share.findmespot.com/shared/faces/viewspots.jsp?glId=$riderglId' target='_blank'>
+	<img src='/static/images/spotlogo02.png' title='Click to see this user on FindMeSpot.com' alt='Click to see this user on FindMeSpot.com' width='48' >
+	</a>
+$else:
+	<a href='http://www.findmespot.com' target='_blank'>
+	<img src='/static/images/spotlogo02.png' title='Click to see more on FindMeSpot.com' alt='Click to see more on FindMeSpot.com' width='48' >
+	</a>
+</div>
 
 	<div id="images">
-	  <a href='$riderurl' title='$riderid' alt='$riderid' target='_blank'>
-      <img src='/static/images/users/$(riderid).png' width='100' onerror="this.src='/static/images/logo-icon2.png';">
-    </a>
-	</div>
+$if riderurl is not None:
+	<a href='$riderurl' title='$riderid' alt='$riderid' target='_blank'>
+	<img src='/static/images/users/$(riderid).png' width='100' onerror="this.src='/static/images/logo-icon2.png';" alt="$riderid logo">
+$else:
+	<a>
+	<img src='/static/images/logo-icon2.png' width='100' alt='Where Am I Riding Logo'>
+</a>
+</div>
 
   </body>
 </html>
