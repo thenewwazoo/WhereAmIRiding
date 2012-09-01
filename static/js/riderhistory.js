@@ -209,7 +209,7 @@ function updateRiderPosMarker()
 
 function getEventInfo(spotmsg) {
   jQuery.ajax({
-    url: "/eventinfo/" + spotmsg.spotuserkey + "/" + spotmsg.key + "/",
+    url: "/eventinfo/" + spotmsg.key + "/",
     success: function(data) {
       infowindow.setContent(data);
       infowindow.open(map, spotmsg.getMapPin());
