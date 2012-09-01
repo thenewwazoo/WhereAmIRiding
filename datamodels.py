@@ -14,6 +14,7 @@ class SPOTUser(db.Model):
 	glId = db.StringProperty(required=True) # may be empty string in future for non-SPOT expansion
 	userEmail = db.EmailProperty(required=True)
 	userWebsite = db.LinkProperty()
+	userImage = db.BlobProperty()
 	# userIM = db.IMProperty()
 	# NOTE: Reference to SPOTUser by SPOTMessageRecord
 
@@ -24,6 +25,7 @@ class SPOTUser(db.Model):
 			form.Textbox("glId", form.notnull, description="SPOT key"),
 			form.Textbox("userEmail", form.regexp(r".*@.*", "Must be a valid email address"), description="Email address"),
 			form.Textbox("userWebsite", description="Website"),
+			form.File("userImage", description="Optional custom user image"),
 			# form.Textbox("userIM", description="IM nickname")
 			)
 

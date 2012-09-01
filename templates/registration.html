@@ -1,11 +1,23 @@
-$def with (email, form, logout, dispname_collision)
-
-<p>Hello, $email!</p>
-<form name="main" method="post"> 
-$if not form.valid: <p class="error">Please enter your registration information:</p>
-$if dispname_collision: <p class="error">That display name is already taken.</p>
-<input type=hidden name=state value="$csrf_token()">
-$:form.render()
-<input type="submit" />
-</form>
-<p><a href="$logout">Log out</a></p>
+$def with (name, form, logout, dispname_collision, hasimage)
+<html>
+<head>
+	<title>Registration!</title>
+	<link rel="stylesheet" href="/static/css/registrationform.css" type="text/css" />
+</head>
+<body>
+	<form name="main" method="post" enctype="multipart/form-data"> 
+		<fieldset>
+			<legend>Hello, $name!</legend>
+			$if not form.valid: <p class="feedback oops">Please enter your registration information:</p>
+			$if dispname_collision: <p class="feedback oops">That display name is already taken.</p>
+			<input type=hidden name=state value="$csrf_token()">
+			$:form.render_css()
+			$if hasimage:<label></label><img src="/userimage/$(hasimage)/" alt="$name user image"></img>
+			<input type="submit" />
+		</fieldset>
+	</form>
+	<p>
+		<a href="$logout">Log out</a>
+	</p>
+</body>
+</html>

@@ -1,0 +1,34 @@
+/*
+ * Modified contact form originally created by Chris Coyier from css-tricks.com
+ * View screencast: http://css-tricks.com/videos/css-tricks-video-21.php
+ -------------------------------------------------------------------------*/
+
+/*
+ * General XHTML styles
+ -----------------------*/
+html            {text-align:center;}
+body            {font:1em/1.4 Verdana, Arial, Helvetica, sans-serif;margin:1em auto;width:40em;text-align:left;padding:0;}
+
+/*
+ * Form elements
+ -----------------------*/
+fieldset        {padding:10px 30px;margin:0;border:1px solid #ccc;-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em;border-bottom-width:10px;}
+legend          {color:#333;padding:0 10px;margin:0;font-size:1.5em;font-weight:400;}
+input           {width:250px;}
+input,
+textarea        {border:1px solid #ccc;padding:5px;margin:10px 0 0 0;}
+input:focus,
+textarea:focus  {background:#ffc;}
+textarea        {font:.9em Verdana, Arial, Helvetica, sans-serif;}
+label           {display:block;margin:12px 0 0;font-weight:700;font-size:.9em;float:left;clear:left;width:190px;}
+/*label:after     {content:": ";}*/
+button          {display:block;float:left;clear:both;margin:1em 0 1em 90px;}
+img             {width:238px;border:1px solid #ccc;padding:5px;margin:10px 0 0 0;}
+
+/*
+ * User feedback
+ -----------------------*/
+.yay, .oops     {font-size:.8em;text-align:center;padding:10px;color:#fff;font-weight:700;}
+.yay            {background:#090;}
+.oops           {background:#f30;}
+div.error       {font-size:.8em;font-weight:700;padding:5px 0 0;color:#f30;margin:0 0 0 90px;}

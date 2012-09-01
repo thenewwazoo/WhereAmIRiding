@@ -171,10 +171,18 @@ function getRiderPositions(isUpdate) {
   jQuery.getJSON( posURL,
     { tstamp: (isUpdate ? lastUpdate: 0) },
     function (riderPos, textStatus, jqXHR) {
+      shadowImage = new google.maps.MarkerImage( "/static/images/shadow-usericon.png", 
+        null, null, new google.maps.Point(11, 25), new google.maps.Size(29, 25) );
       jQuery.each(riderPos, function(i, entry) {
         var spotmsg = new SPOTMessageRecord(entry);
         var msgpin = spotmsg.getMapPin();
-        msgpin.setIcon(markerImages['END']); // FIXME should probably be user icons
+        msgpin.setIcon(
+          new google.maps.MarkerImage(
+            "/userimage/" + entry['spotuser'] + "/", 
+            null, null, null, new google.maps.Size(22, 25)
+          )
+        );
+        msgpin.setShadow(shadowImage);
         msgpin.setMap(map);
         google.maps.event.addListener(msgpin, 'click', function() {
           infowindow.close();

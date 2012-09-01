@@ -37,6 +37,9 @@ handlers:
 - url: /register/(.*)
   script: registration.registration_app
 
+- url: /userimage/(.*)
+  script: registration.registration_app
+
 - url: /logout/
   script: registration.registration_app
 

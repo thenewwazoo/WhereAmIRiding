@@ -37,22 +37,35 @@ login = CompiledTemplate(login, 'templates/login.html')
 join_ = login._join; escape_ = login._escape
 
 # coding: utf-8
-def registration (email, form, logout, dispname_collision):
+def registration (name, form, logout, dispname_collision, hasimage):
     __lineoffset__ = -4
     loop = ForLoop()
     self = TemplateResult(); extend_ = self.extend
-    extend_([u'\n'])
-    extend_([u'<p>Hello, ', escape_(email, True), u'!</p>\n'])
-    extend_([u'<form name="main" method="post"> \n'])
+    extend_([u'<html>\n'])
+    extend_([u'<head>\n'])
+    extend_([u'        <title>Registration!</title>\n'])
+    extend_([u'        <link rel="stylesheet" href="/static/css/registrationform.css" type="text/css" />\n'])
+    extend_([u'</head>\n'])
+    extend_([u'<body>\n'])
+    extend_([u'        <form name="main" method="post" enctype="multipart/form-data"> \n'])
+    extend_([u'                <fieldset>\n'])
+    extend_([u'                        <legend>Hello, ', escape_(name, True), u'!</legend>\n'])
     if not form.valid:
-        extend_([u'<p class="error">Please enter your registration information:</p>\n'])
+        extend_(['                        ', u'<p class="feedback oops">Please enter your registration information:</p>\n'])
     if dispname_collision:
-        extend_([u'<p class="error">That display name is already taken.</p>\n'])
-    extend_([u'<input type=hidden name=state value="', escape_(csrf_token(), True), u'">\n'])
-    extend_([escape_(form.render(), False), u'\n'])
-    extend_([u'<input type="submit" />\n'])
-    extend_([u'</form>\n'])
-    extend_([u'<p><a href="', escape_(logout, True), u'">Log out</a></p>\n'])
+        extend_(['                        ', u'<p class="feedback oops">That display name is already taken.</p>\n'])
+    extend_([u'                        <input type=hidden name=state value="', escape_(csrf_token(), True), u'">\n'])
+    extend_([u'                        ', escape_(form.render_css(), False), u'\n'])
+    if hasimage:
+        extend_(['                        ', u'<label></label><img src="/userimage/', escape_((hasimage), True), u'/" alt="', escape_(name, True), u' user image"></img>\n'])
+    extend_([u'                        <input type="submit" />\n'])
+    extend_([u'                </fieldset>\n'])
+    extend_([u'        </form>\n'])
+    extend_([u'        <p>\n'])
+    extend_([u'                <a href="', escape_(logout, True), u'">Log out</a>\n'])
+    extend_([u'        </p>\n'])
+    extend_([u'</body>\n'])
+    extend_([u'</html>\n'])
 
     return self
 
